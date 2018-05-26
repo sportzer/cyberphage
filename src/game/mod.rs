@@ -352,6 +352,7 @@ impl Level {
     }
 
     // TODO: set goals / have enemy memory
+    // TODO: make hunters smart enough to exploit strike/dodge
     fn take_turn(&mut self, entity: Entity) {
         if entity == PLAYER {
             return;

@@ -13,7 +13,8 @@ display.setOptions({
 document.body.appendChild(display.getContainer());
 
 wasm_bindgen('./cyberphage_wasm_bg.wasm').then(() => {
-    const seed = Math.floor(Math.random() * (1<<32));
+    const seed = Math.floor(Math.random() * Math.pow(2, 32));
+    console.log("game seed: " + seed);
     const game = Game.new(seed);
     game.set_size(WIDTH, HEIGHT);
 
