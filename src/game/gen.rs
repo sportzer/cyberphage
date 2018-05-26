@@ -51,23 +51,52 @@ fn test_map(level: &mut Level) {
     }
     level.set_tile(Position { x: 33, y: 21 }, Tile::Exit);
     level.move_entity(PLAYER, Position { x: 3, y: 3 });
-    let hunter = level.spawn_entity(EntityType::Hunter, Position { x: 2, y: 4 });
-    hunter.map(|h| level.decks.insert(h, vec![
-        CardState{ card: Card::Strike, status: CardStatus::Active },
-        CardState{ card: Card::Dodge, status: CardStatus::Active },
-    ]));
-    let defender = level.spawn_entity(EntityType::Defender, Position { x: 4, y: 5 });
-    defender.map(|d| level.decks.insert(d, vec![
-        CardState{ card: Card::Defend(2), status: CardStatus::Active },
-        CardState{ card: Card::Block, status: CardStatus::Active },
-        CardState{ card: Card::Push, status: CardStatus::Active },
-    ]));
-    let reaper = level.spawn_entity(EntityType::Reaper, Position { x: 3, y: 2 });
-    reaper.map(|r| level.decks.insert(r, vec![
-        CardState{ card: Card::Kill(1), status: CardStatus::Active },
-        CardState{ card: Card::Attack(1), status: CardStatus::Active },
-    ]));
+    for _ in 0..64 {
+        let pos = Position {
+            x: level.rng.gen_range(1, 35),
+            y: level.rng.gen_range(1, 23),
+        };
+        if level.is_open(pos) && level.get_sq(pos).tile != Tile::Door {
+            place_entity(level, pos, EntityType::UnknownThing);
+        }
+    }
     level.log.messages.push(String::from("You are in some sort of server. It seems pretty quiet here."));
+}
+
+fn place_entity(level: &mut Level, pos: Position, t: EntityType) {
+    match t {
+        EntityType::Player => { /* TODO: handle this? */ }
+        EntityType::Defender => {
+            let defender = level.spawn_entity(EntityType::Defender, pos);
+            defender.map(|d| level.decks.insert(d, vec![
+                CardState{ card: Card::Defend(2), status: CardStatus::Active },
+                CardState{ card: Card::Block, status: CardStatus::Active },
+                CardState{ card: Card::Push, status: CardStatus::Active },
+            ]));
+        }
+        EntityType::Hunter => {
+            let hunter = level.spawn_entity(EntityType::Hunter, pos);
+            hunter.map(|h| level.decks.insert(h, vec![
+                CardState{ card: Card::Strike, status: CardStatus::Active },
+                CardState{ card: Card::Dodge, status: CardStatus::Active },
+            ]));
+        }
+        EntityType::Reaper => {
+            let reaper = level.spawn_entity(EntityType::Reaper, pos);
+            reaper.map(|r| level.decks.insert(r, vec![
+                CardState{ card: Card::Kill(1), status: CardStatus::Active },
+                CardState{ card: Card::Attack(1), status: CardStatus::Active },
+            ]));
+        }
+        EntityType::UnknownThing => {
+            let t = *level.rng.choose(&[
+                EntityType::Defender,
+                EntityType::Hunter,
+                EntityType::Reaper,
+            ]).unwrap();
+            place_entity(level, pos, t);
+        }
+    }
 }
 
 // TODO: optional hallways that get pruned post level generation
