@@ -749,13 +749,13 @@ impl Level {
                         damage: 1,
                         direction: Some(dir),
                     });
-                    CardOutcome::Done
+                    CardOutcome::Discard
                 } else {
                     self.execute(entity, Event::Move {
                         destination: new_pos,
                         direction: Some(dir),
                     });
-                    CardOutcome::Cancel
+                    CardOutcome::DiscardAndCancel
                 }
             }
             (Card::Block, Event::Defend { .. }) =>  {
