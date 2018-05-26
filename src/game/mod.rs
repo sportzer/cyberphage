@@ -220,7 +220,8 @@ impl Game {
         let update = match *self {
             Game::Level(ref level) => {
                 if level.is_complete() {
-                    Some(if level.level == 6 {
+                    // TODO: change this back eventually
+                    Some(if level.level == 0 {
                         Game::Victory
                     } else {
                         let deck = level.decks.get(&PLAYER).iter().flat_map(|v| v.iter())
