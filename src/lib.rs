@@ -252,7 +252,7 @@ pub fn build_ui(siv: &mut Cursive, seed: u32) {
                         .child(BoxView::with_fixed_width(1, DummyView))
                         // TODO: Make quit button conditional on target (hide for WASM)
                         // .child(Button::new("[Ctrl+q] Quit", |s| s.quit()).with_id(QUIT_ID))
-                        .child(BoxView::with_fixed_width(2, DummyView))
+                        // .child(BoxView::with_fixed_width(2, DummyView))
                         .child(Button::new("[?] Help", |_| ()))
                         // .child(BoxView::with_fixed_width(2, DummyView))
                         // .child(Button::new("[Space] Restore focus", |s| s.focus_id(MAP_ID).unwrap()))
@@ -329,6 +329,6 @@ pub fn build_ui(siv: &mut Cursive, seed: u32) {
     ));
 
     update_ui(siv, &game.borrow());
-    siv.focus_id(QUIT_ID).unwrap();
+    // siv.focus_id(QUIT_ID).unwrap();
     siv.focus_id(MAP_ID).unwrap();
 }
