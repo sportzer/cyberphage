@@ -1,0 +1,21 @@
+[package]
+name = "cyberphage"
+version = "0.1.0"
+authors = ["Steven Portzer <stevenportzer@gmail.com>"]
+
+[lib]
+name = "cyberphage"
+
+[dependencies]
+rand = "0.5"
+
+[dependencies.cursive]
+# TODO: switch to cursive "0.9" once that's released
+# TODO: report issue with num default features upstream
+# git = "https://github.com/gyscos/Cursive"
+path = "../Cursive"
+default-features = false
+
+[features]
+default = ["ncurses-backend"]
+ncurses-backend = ["cursive/ncurses-backend"]
