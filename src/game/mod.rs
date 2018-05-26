@@ -1,6 +1,3 @@
-// TODO: remove allow
-#![allow(dead_code)]
-
 use std::collections::{BTreeMap, HashSet};
 
 use rand::{Rng, SeedableRng, StdRng};
@@ -82,10 +79,10 @@ impl EntityType {
 }
 
 enum Goal {
-    Move(Position),
-    Attack(Entity),
-    Wait,
-    Rest,
+    // Move(Position),
+    // Attack(Entity),
+    // Wait,
+    // Rest,
 }
 
 // TODO: real display functionality
@@ -241,8 +238,8 @@ impl Game {
                 }
             }
             Game::Transition(ref trans) => {
-                // TODO: actual give the player a deck
-                Some(Game::Level(Level::next(trans.next_level, Vec::new(), trans.rng.clone())))
+                // TODO: actual give the player new cards
+                Some(Game::Level(Level::next(trans.next_level, trans.deck.clone(), trans.rng.clone())))
             }
             Game::Victory => None,
         };
@@ -339,7 +336,11 @@ impl Level {
         }
         let success = self.do_action(PLAYER, action);
         if success {
-            // TODO: enemy action
+            self.update_visibility();
+            let entities: Vec<_> = self.types.keys().cloned().collect();
+            for e in entities {
+                self.take_turn(e);
+            }
             self.update_visibility();
             if self.is_complete() {
                 self.log.messages.push(String::from("Exiting level!"));
@@ -347,6 +348,57 @@ impl Level {
             }
         }
         success
+    }
+
+    // TODO: set goals / have enemy memory
+    fn take_turn(&mut self, entity: Entity) {
+        if entity == PLAYER {
+            return;
+        }
+        let t = self.type_of(entity);
+        if t == EntityType::UnknownThing { return; }
+        let pos = match self.positions.get(&entity) {
+            Some(&pos) => pos,
+            None => { return; }
+        };
+        let player_pos = match self.positions.get(&PLAYER) {
+            Some(&pos) => pos,
+            None => { return; }
+        };
+        let vis = self.get_sq(pos).visibility == Visibility::Visible;
+        if !vis { return; }
+
+        let (hdir, mut hweight) = if pos.x > player_pos.x {
+            (Direction::Left, pos.x - player_pos.x)
+        } else if pos.x < player_pos.x {
+            (Direction::Right, player_pos.x - pos.x)
+        } else {
+            (Direction::Left, 0)
+        };
+        let hpos = pos.step(hdir);
+        if hweight != 0 && hpos != player_pos && !self.is_open(hpos) {
+            hweight = 0;
+        }
+
+        let (vdir, mut vweight) = if pos.y > player_pos.y {
+            (Direction::Up, pos.y - player_pos.y)
+        } else if pos.y < player_pos.y {
+            (Direction::Down, player_pos.y - pos.y)
+        } else {
+            (Direction::Up, 0)
+        };
+        let vpos = pos.step(vdir);
+        if vweight != 0 && vpos != player_pos && !self.is_open(vpos) {
+            vweight = 0;
+        }
+
+        if hweight + vweight > 0 {
+            if self.rng.gen_range(0, hweight + vweight) >= hweight {
+                self.do_action(entity, Action::Move(vdir));
+            } else {
+                self.do_action(entity, Action::Move(hdir));
+            }
+        }
     }
 
     pub fn is_complete(&self) -> bool {
@@ -387,7 +439,7 @@ impl Level {
         // let deck = vec![Card::Attack(1), Card::Block];
         let deck = vec![
             Card::Attack(1), Card::Kill(1), Card::Hit, Card::Push,
-            Card::Run, Card::Defend(1), Card::Block,
+            Card::Run, Card::Defend(2), Card::Block,
         ];
         Level::next(0, deck, StdRng::from_seed(s))
     }
@@ -461,7 +513,7 @@ impl Level {
                 _ => { return false; }
             },
         };
-        if self.log.messages.last().map(|s| &**s) != Some("---") {
+        if entity == PLAYER && self.log.messages.last().map(|s| &**s) != Some("---") {
             self.log.messages.push(format!("---"));
         }
         self.process(entity, event);

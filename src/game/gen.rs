@@ -62,6 +62,11 @@ fn test_map(level: &mut Level) {
         CardState{ card: Card::Block, status: CardStatus::Active },
         CardState{ card: Card::Push, status: CardStatus::Active },
     ]));
+    let reaper = level.spawn_entity(EntityType::Reaper, Position { x: 3, y: 2 });
+    reaper.map(|r| level.decks.insert(r, vec![
+        CardState{ card: Card::Kill(1), status: CardStatus::Active },
+        CardState{ card: Card::Attack(1), status: CardStatus::Active },
+    ]));
     level.log.messages.push(String::from("You are in some sort of server. It seems pretty quiet here."));
 }
 

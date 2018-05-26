@@ -125,7 +125,7 @@ fn process_map_event(game: &mut Rc<RefCell<game::Game>>, event: Event) -> EventR
         Event::Key(Key::Right) => action_cb(game, game::Action::Move(game::Direction::Right)),
         Event::Char('.') => action_cb(game, game::Action::Rest),
         Event::Char('r') => action_cb(game, game::Action::Rest),
-        Event::Char('z') => action_cb(game, game::Action::Wait),
+        Event::Char('w') => action_cb(game, game::Action::Wait),
         Event::Char(' ') => EventResult::with_cb(move |s| {
             // TODO: handle level transitions
             let mut game = game.borrow_mut();
