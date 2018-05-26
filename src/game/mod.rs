@@ -79,7 +79,7 @@ impl EntityType {
 }
 
 enum Goal {
-    // Move(Position),
+    Move(Position),
     // Attack(Entity),
     // Wait,
     // Rest,

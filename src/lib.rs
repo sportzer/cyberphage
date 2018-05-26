@@ -237,7 +237,6 @@ pub fn build_ui(siv: &mut Cursive, seed: u32) {
     theme.palette[PaletteColor::Tertiary] = Color::Dark(BaseColor::Cyan);
     siv.set_theme(theme);
 
-    // TODO: add buttons for rest and wait
     // TODO: add button and key binding for new game
     siv.add_global_callback(Event::CtrlChar('q'), |s| s.quit());
     siv.add_global_callback('?', |_| ());
@@ -248,9 +247,11 @@ pub fn build_ui(siv: &mut Cursive, seed: u32) {
         LinearLayout::new(Orientation::Vertical)
             .child(BoxView::with_full_width(
                 IsolateFocusView::new(
+                    // TODO: add buttons for rest and wait
                     LinearLayout::new(Orientation::Horizontal)
                         .child(BoxView::with_fixed_width(1, DummyView))
-                        .child(Button::new("[Ctrl+q] Quit", |s| s.quit()).with_id(QUIT_ID))
+                        // TODO: Make quit button conditional on target (hide for WASM)
+                        // .child(Button::new("[Ctrl+q] Quit", |s| s.quit()).with_id(QUIT_ID))
                         .child(BoxView::with_fixed_width(2, DummyView))
                         .child(Button::new("[?] Help", |_| ()))
                         // .child(BoxView::with_fixed_width(2, DummyView))
