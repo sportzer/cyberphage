@@ -78,6 +78,7 @@ impl EntityType {
     }
 }
 
+#[derive(Eq, PartialEq, Copy, Clone)]
 enum Goal {
     Move(Position),
     // Attack(Entity),
@@ -361,34 +362,49 @@ impl Level {
             Some(&pos) => pos,
             None => { return; }
         };
-        let player_pos = match self.positions.get(&PLAYER) {
-            Some(&pos) => pos,
-            None => { return; }
-        };
-        let vis = self.get_sq(pos).visibility == Visibility::Visible;
-        if !vis { return; }
 
-        let (hdir, mut hweight) = if pos.x > player_pos.x {
-            (Direction::Left, pos.x - player_pos.x)
-        } else if pos.x < player_pos.x {
-            (Direction::Right, player_pos.x - pos.x)
+        let target_pos;
+        {
+            let player_pos = match self.positions.get(&PLAYER) {
+                Some(&pos) => pos,
+                None => { return; }
+            };
+
+            let vis = self.get_sq(pos).visibility == Visibility::Visible;
+            if vis {
+                target_pos = player_pos;
+                self.goals.insert(entity, Goal::Move(player_pos));
+            } else if let Some(&goal) = self.goals.get(&entity) {
+                match goal {
+                    Goal::Move(pos) => { target_pos = pos; }
+                    _ => { return; }
+                }
+            } else {
+                return;
+            }
+        }
+
+        let (hdir, mut hweight) = if pos.x > target_pos.x {
+            (Direction::Left, pos.x - target_pos.x)
+        } else if pos.x < target_pos.x {
+            (Direction::Right, target_pos.x - pos.x)
         } else {
             (Direction::Left, 0)
         };
         let hpos = pos.step(hdir);
-        if hweight != 0 && hpos != player_pos && !self.is_open(hpos) {
+        if hweight != 0 && hpos != target_pos && !self.is_open(hpos) {
             hweight = 0;
         }
 
-        let (vdir, mut vweight) = if pos.y > player_pos.y {
-            (Direction::Up, pos.y - player_pos.y)
-        } else if pos.y < player_pos.y {
-            (Direction::Down, player_pos.y - pos.y)
+        let (vdir, mut vweight) = if pos.y > target_pos.y {
+            (Direction::Up, pos.y - target_pos.y)
+        } else if pos.y < target_pos.y {
+            (Direction::Down, target_pos.y - pos.y)
         } else {
             (Direction::Up, 0)
         };
         let vpos = pos.step(vdir);
-        if vweight != 0 && vpos != player_pos && !self.is_open(vpos) {
+        if vweight != 0 && vpos != target_pos && !self.is_open(vpos) {
             vweight = 0;
         }
 
