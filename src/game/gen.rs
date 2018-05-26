@@ -53,8 +53,8 @@ fn test_map(level: &mut Level) {
     level.move_entity(PLAYER, Position { x: 3, y: 3 });
     let hunter = level.spawn_entity(EntityType::Hunter, Position { x: 2, y: 4 });
     hunter.map(|h| level.decks.insert(h, vec![
-        CardState{ card: Card::Hit, status: CardStatus::Active },
-        CardState{ card: Card::Run, status: CardStatus::Active },
+        CardState{ card: Card::Strike, status: CardStatus::Active },
+        CardState{ card: Card::Dodge, status: CardStatus::Active },
     ]));
     let defender = level.spawn_entity(EntityType::Defender, Position { x: 4, y: 5 });
     defender.map(|d| level.decks.insert(d, vec![

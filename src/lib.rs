@@ -253,6 +253,7 @@ pub fn build_ui(siv: &mut Cursive, seed: u32) {
                         // TODO: Make quit button conditional on target (hide for WASM)
                         // .child(Button::new("[Ctrl+q] Quit", |s| s.quit()).with_id(QUIT_ID))
                         // .child(BoxView::with_fixed_width(2, DummyView))
+                        // TODO: actually implement Help dialog
                         .child(Button::new("[?] Help", |_| ()))
                         // .child(BoxView::with_fixed_width(2, DummyView))
                         // .child(Button::new("[Space] Restore focus", |s| s.focus_id(MAP_ID).unwrap()))

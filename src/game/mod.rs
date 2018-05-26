@@ -91,8 +91,8 @@ pub enum Card {
     Attack(i32),
     Defend(i32),
     Kill(i32),
-    Hit,
-    Run,
+    Strike,
+    Dodge,
     Block,
     Push,
 }
@@ -441,8 +441,8 @@ impl Level {
         // TODO
         // let deck = vec![Card::Attack(1), Card::Block];
         let deck = vec![
-            Card::Attack(1), Card::Kill(1), Card::Hit, Card::Push,
-            Card::Run, Card::Defend(2), Card::Block,
+            Card::Attack(1), Card::Kill(1), Card::Strike, Card::Push,
+            Card::Dodge, Card::Defend(2), Card::Block,
         ];
         Level::next(0, deck, StdRng::from_seed(s))
     }
@@ -699,7 +699,7 @@ impl Level {
                     CardOutcome::Continue
                 }
             }
-            (Card::Hit, &mut Event::Move { destination, direction: Some(dir) }) => {
+            (Card::Strike, &mut Event::Move { destination, direction: Some(dir) }) => {
                 let target_pos = destination.step(dir);
                 if let Some(target) = self.get_sq(target_pos).entity {
                     self.log.messages.push(format!("({:?}'s {:?} card activated)", t, card));
@@ -717,7 +717,7 @@ impl Level {
                     CardOutcome::Continue
                 }
             }
-            (Card::Run, &mut Event::Defend { direction: Some(dir), .. }) => {
+            (Card::Dodge, &mut Event::Defend { direction: Some(dir), .. }) => {
                 let new_pos = match self.positions.get(&entity) {
                     Some(&pos) => pos,
                     None => { return CardOutcome::Continue; }
