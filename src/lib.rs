@@ -237,6 +237,8 @@ pub fn build_ui(siv: &mut Cursive, seed: u32) {
     theme.palette[PaletteColor::Tertiary] = Color::Dark(BaseColor::Cyan);
     siv.set_theme(theme);
 
+    // TODO: add buttons for rest and wait
+    // TODO: add button and key binding for new game
     siv.add_global_callback(Event::CtrlChar('q'), |s| s.quit());
     siv.add_global_callback('?', |_| ());
     siv.add_global_callback(Key::Esc, |s| s.focus_id(MAP_ID).unwrap());

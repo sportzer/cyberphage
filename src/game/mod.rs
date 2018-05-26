@@ -336,12 +336,12 @@ impl Level {
         }
         let success = self.do_action(PLAYER, action);
         if success {
-            self.update_visibility();
+            self.update_visibility(true);
             let entities: Vec<_> = self.types.keys().cloned().collect();
             for e in entities {
                 self.take_turn(e);
             }
-            self.update_visibility();
+            self.update_visibility(false);
             if self.is_complete() {
                 self.log.messages.push(String::from("Exiting level!"));
                 self.log.messages.push(String::from("Press [Space] to continue..."));
@@ -392,13 +392,16 @@ impl Level {
             vweight = 0;
         }
 
-        if hweight + vweight > 0 {
+        let action = if hweight + vweight > 0 {
             if self.rng.gen_range(0, hweight + vweight) >= hweight {
-                self.do_action(entity, Action::Move(vdir));
+                Action::Move(vdir)
             } else {
-                self.do_action(entity, Action::Move(hdir));
+                Action::Move(hdir)
             }
-        }
+        } else {
+            Action::Rest
+        };
+        self.do_action(entity, action);
     }
 
     pub fn is_complete(&self) -> bool {
@@ -469,7 +472,7 @@ impl Level {
             |c| CardState { card: c, status: CardStatus::Active }
         ).collect());
         level.generate();
-        level.update_visibility();
+        level.update_visibility(true);
         level
     }
 
@@ -553,11 +556,13 @@ impl Level {
         self.modifiers.remove(&entity);
     }
 
-    fn update_visibility(&mut self) {
-        for y in 0..MAP_HEIGHT {
-            for x in 0..MAP_WIDTH {
-                if self.map[y][x].visibility == Visibility::Visible {
-                    self.map[y][x].visibility = Visibility::Remembered;
+    fn update_visibility(&mut self, clear: bool) {
+        if clear {
+            for y in 0..MAP_HEIGHT {
+                for x in 0..MAP_WIDTH {
+                    if self.map[y][x].visibility == Visibility::Visible {
+                        self.map[y][x].visibility = Visibility::Remembered;
+                    }
                 }
             }
         }
@@ -868,13 +873,19 @@ impl Level {
     }
 
     fn recover(&mut self, entity: Entity) {
+        // let mut card = None;
         if let Some(deck) = self.decks.get_mut(&entity) {
             let mut discard: Vec<_> = deck.iter_mut().filter(|c| !c.status.in_hand()).collect();
             if let Some(sel) = self.rng.choose_mut(&mut discard) {
-                // TODO: message
                 // TODO: handle removing modifiers
                 sel.status = CardStatus::Active;
+                // card = Some(sel.card);
             }
         }
+        // TODO: message?
+        // if let Some(card) = card {
+        //     let t = self.type_of(entity);
+        //     self.log.messages.push(format!("({:?} draws its {:?} card)", t, card));
+        // }
     }
 }
