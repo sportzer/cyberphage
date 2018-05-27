@@ -271,6 +271,9 @@ impl Position {
     }
 }
 
+// TODO: remove rest and toggle? They're not terribly useful and toggle in particular is fiddly to
+// use... may need to wait to see if additional content makes them suddenly useful to have (or make
+// sure not to add content that makes not having them annoying?)
 #[derive(Eq, PartialEq, Copy, Clone)]
 pub enum Action {
     Move(Direction),
@@ -744,6 +747,9 @@ impl Level {
                 if dst.tile == Tile::Wall {
                     return CardOutcome::Continue;
                 }
+                // TODO: Really allow dodging into other entities? It's hilarious and all, but a
+                // little unhelpful for the thing doing the dodging (but dodging is still really
+                // good, so maybe that's a reasonable tradeoff)
                 self.log.messages.push(format!("({:?}'s {:?} card activated)", t, card));
                 if let Some(target) = dst.entity {
                     self.execute(entity, Event::Attack {
