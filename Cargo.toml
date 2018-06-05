@@ -11,9 +11,7 @@ rand = "0.5"
 
 [dependencies.cursive]
 # TODO: switch to cursive "0.9" once that's released
-# TODO: report issue with num default features upstream
-# git = "https://github.com/gyscos/Cursive"
-path = "../Cursive"
+git = "https://github.com/sportzer/Cursive"
 default-features = false
 
 [features]
